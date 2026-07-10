@@ -1,12 +1,18 @@
 import { useProducts } from "../hooks/useProducts";
 import ProductCard from "../components/product/ProductCard";
+import Loader from "../components/ui/Loader";
+import ErrorMessage from "../components/ui/ErrorMessage";
 
 const Home = () => {
   const { products, loading, error } = useProducts();
 
-  if (loading) return <h2>Loading...</h2>;
+  if (loading) {
+    return <Loader />;
+  }
 
-  if (error) return <h2>{error}</h2>;
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
 
   return (
     <div className="mx-auto max-w-7xl p-6">

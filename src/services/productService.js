@@ -8,7 +8,9 @@ async function request(url, options = {}) {
     throw new Error(`Request failed with status ${response.status}`);
   }
 
-  return response.json();
+  const text = await response.text();
+
+  return text ? JSON.parse(text) : null;
 }
 
 async function getProducts() {

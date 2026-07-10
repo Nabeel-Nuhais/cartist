@@ -17,12 +17,13 @@ const ProductCard = ({ product }) => {
 
       <p className="mt-3 text-2xl font-bold text-green-600">${product.price}</p>
 
-      <p className="mt-2 mb-2 text-sm text-gray-600">
-        ⭐ {product.rating.rate} ({product.rating.count} reviews)
+      <p className="mt-4 mb-4 text-gray-600">
+        ⭐ {product.rating?.rate ?? "N/A"} ({product.rating?.count ?? 0}{" "}
+        reviews)
       </p>
 
       <Link
-        to={`/products/${product.id}`}
+        to={`/product/${product.id}`}
         className="mt-auto block w-full rounded-md bg-black py-2 text-center text-white transition-colors duration-200 hover:bg-gray-800"
       >
         View Details

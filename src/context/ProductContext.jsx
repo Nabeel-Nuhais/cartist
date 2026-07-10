@@ -29,6 +29,36 @@ export function ProductProvider({ children }) {
     }
   }
 
+  // Creates a new product and updates the shared product list.
+  async function addProduct(product) {
+    const newProduct = await productService.createProduct(product);
+
+    // Add the newly created product to the existing list in client-side state.
+    setProducts((prevProducts) => [...prevProducts, newProduct]);
+
+    return newProduct;
+  }
+
+  // Updates an existing product and synchronizes the shared product list.
+  async function updateProduct(id, updatedProduct) {
+    const product = await productService.updateProduct(id, updatedProduct);
+
+    setProducts((prevProducts) =>
+      prevProducts.map((item) => (item.id === id ? product : item)),
+    );
+
+    return product;
+  }
+
+  // Deletes a product and removes it from the shared product list.
+  async function deleteProduct(id) {
+    await productService.deleteProduct(id);
+
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product.id !== id),
+    );
+  }
+
   // Load products when the provider is mounted.
   useEffect(() => {
     loadProducts();
@@ -41,11 +71,14 @@ export function ProductProvider({ children }) {
         loading,
         error,
         loadProducts,
+        addProduct,
+        updateProduct,
+        deleteProduct,
       }}
     >
       {children}
     </ProductContext.Provider>
   );
-};
+}
 
 export { ProductContext };

@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-
+import { useParams, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import productService from "../services/productService";
+import { useProducts } from "../hooks/useProducts";
+import Loader from "../components/ui/Loader";
+import ErrorMessage from "../components/ui/ErrorMessage";
+import Modal from "../components/ui/Modal";
 
 const ProductDetails = () => {
   const { id } = useParams();
+
+  const { products, deleteProduct } = useProducts();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const navigate = useNavigate();
 
   // Local state for the selected product and request status.
@@ -12,8 +20,16 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch the selected product using the ID from the URL.
+  // Load the selected product from the shared state or API.
   async function loadProduct() {
+    // Check if the product already exists in the shared state.
+    const existingProduct = products.find((item) => item.id === Number(id));
+
+    if (existingProduct) {
+      setProduct(existingProduct);
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -31,21 +47,47 @@ const ProductDetails = () => {
     }
   }
 
-  // Reload the product whenever the route parameter changes.
+  // Delete the current product and return to the home page.
+  async function handleDelete() {
+    try {
+      await deleteProduct(product.id);
+
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // Reload the product whenever the route parameter or shared product list changes.
   useEffect(() => {
     loadProduct();
-  }, [id]);
+  }, [id, products]);
 
   if (loading) {
-    return <h2>Loading...</h2>;
+    return <Loader />;
   }
 
   if (error) {
-    return <h2>{error}</h2>;
+    return <ErrorMessage message={error} />;
   }
-  
+
   if (!product) {
-    return <h2 className="p-6 text-center">No product found.</h2>;
+    return (
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
+        <h2 className="text-4xl font-bold">Product Not Found</h2>
+
+        <p className="mt-3 text-gray-600">
+          The product you're looking for doesn't exist or may have been removed.
+        </p>
+
+        <Link
+          to="/"
+          className="mt-6 rounded-md bg-black px-5 py-3 text-white transition-colors hover:bg-gray-800"
+        >
+          Back to Home
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -65,29 +107,45 @@ const ProductDetails = () => {
           <span className="rounded-full bg-gray-200 px-3 py-1 text-sm">
             {product.category}
           </span>
-
           <h1 className="mt-4 text-3xl font-bold">{product.title}</h1>
-
           <p className="mt-4 text-gray-600">
-            ⭐ {product.rating.rate} ({product.rating.count} reviews)
+            ⭐ {product.rating?.rate ?? "N/A"} ({product.rating?.count ?? 0}{" "}
+            reviews)
           </p>
-
           <p className="mt-6 text-4xl font-bold text-green-600">
             ${product.price}
           </p>
-
           <p className="mt-6 text-gray-700">{product.description}</p>
-
-          <div className="mt-8">
-            <button
-              onClick={() => navigate(-1)}
+          <div className="mt-8 flex gap-4">
+            <Link
+              to={`/edit-product/${product.id}`}
               className="cursor-pointer rounded-md border px-5 py-2 transition-colors duration-200 hover:bg-gray-100"
             >
-              ← Back
+              Edit Product
+            </Link>
+
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="rounded-md bg-red-600 px-5 py-2 text-white cursor-pointer transition-colors duration-200 hover:bg-red-700"
+            >
+              Delete Product
             </button>
           </div>
         </div>
       </div>
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          title="Delete Product"
+          onCancel={() => setShowDeleteModal(false)}
+          onConfirm={handleDelete}
+          confirmText="Delete"
+        >
+          <p>
+            Are you sure you want to delete <strong>{product.title}</strong>?
+          </p>
+        </Modal>
+      )}
     </div>
   );
 };
