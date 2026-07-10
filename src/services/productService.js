@@ -1,5 +1,6 @@
 const BASE_URL = "https://fakestoreapi.com/products";
 
+// Centralized request helper used by all product API operations.
 async function request(url, options = {}) {
   const response = await fetch(url, options);
 
@@ -44,6 +45,7 @@ async function deleteProduct(id) {
   });
 }
 
+// Export all product-related API operations through a single service object.
 const productService = {
   getProducts,
   getProductById,
