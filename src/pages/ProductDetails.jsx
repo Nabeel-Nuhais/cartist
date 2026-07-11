@@ -13,6 +13,8 @@ const ProductDetails = () => {
   const { products, deleteProduct } = useProducts();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const navigate = useNavigate();
 
   // Local state for the selected product and request status.
@@ -24,12 +26,18 @@ const ProductDetails = () => {
 
   // Delete the current product and return to the home page.
   async function handleDelete() {
+    if (isDeleting) return;
+
     try {
+      setIsDeleting(true);
+
       await deleteProduct(product.id);
 
       navigate("/");
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -60,7 +68,7 @@ const ProductDetails = () => {
         setLoading(false);
       }
     }
-    
+
     loadProduct();
   }, [id, products]);
 
@@ -127,7 +135,8 @@ const ProductDetails = () => {
 
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="rounded-md bg-red-600 px-5 py-2 text-white cursor-pointer transition-colors duration-200 hover:bg-red-700"
+              disabled={showDeleteModal}
+              className="cursor-pointer rounded-md bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Delete Product
             </button>
@@ -141,6 +150,7 @@ const ProductDetails = () => {
           onCancel={() => setShowDeleteModal(false)}
           onConfirm={handleDelete}
           confirmText="Delete"
+          isDeleting={isDeleting}
         >
           <p>
             Are you sure you want to delete <strong>{product.title}</strong>?

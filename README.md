@@ -115,17 +115,6 @@ https://fakestoreapi.com/
 
 ---
 
-## 📌 Future Improvements
-
-* Image preview before submitting a product.
-* Search and filter products.
-* Product pagination.
-* Toast notifications.
-* Authentication and authorization.
-* Backend database integration.
-
----
-
 ## 👨‍💻 Author
 
 Developed by **Nabeel Nuhais**.

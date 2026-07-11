@@ -6,6 +6,7 @@ const Modal = ({
   onConfirm,
   confirmText = "Confirm",
   cancelText = "Cancel",
+  isDeleting = false,
 }) => {
   if (!isOpen) {
     return null;
@@ -21,16 +22,18 @@ const Modal = ({
         <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className="cursor-pointer rounded border px-4 py-2 hover:bg-gray-100"
+            disabled={isDeleting}
+            className="cursor-pointer rounded border px-4 py-2 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {cancelText}
           </button>
 
           <button
             onClick={onConfirm}
-            className="cursor-pointer rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+            disabled={isDeleting}
+            className="cursor-pointer rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
           >
-            {confirmText}
+            {isDeleting ? "Deleting..." : confirmText}
           </button>
         </div>
       </div>
