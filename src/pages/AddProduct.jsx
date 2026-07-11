@@ -143,7 +143,7 @@ const AddProduct = () => {
           type="submit"
           className="rounded cursor-pointer bg-black px-5 py-3 text-white"
         >
-          Add Product
+          Create Product
         </button>
       </form>
     </div>

@@ -21,31 +21,6 @@ const ProductDetails = () => {
   const [error, setError] = useState(null);
 
   // Load the selected product from the shared state or API.
-  async function loadProduct() {
-    // Check if the product already exists in the shared state.
-    const existingProduct = products.find((item) => item.id === Number(id));
-
-    if (existingProduct) {
-      setProduct(existingProduct);
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const data = await productService.getProductById(id);
-
-      setProduct(data);
-
-      // Clear any previous error after a successful request.
-      setError(null);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      // Always stop the loading state, whether the request succeeds or fails.
-      setLoading(false);
-    }
-  }
 
   // Delete the current product and return to the home page.
   async function handleDelete() {
@@ -60,6 +35,32 @@ const ProductDetails = () => {
 
   // Reload the product whenever the route parameter or shared product list changes.
   useEffect(() => {
+    async function loadProduct() {
+      // Check if the product already exists in the shared state.
+      const existingProduct = products.find((item) => item.id === Number(id));
+
+      if (existingProduct) {
+        setProduct(existingProduct);
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        const data = await productService.getProductById(id);
+
+        setProduct(data);
+
+        // Clear any previous error after a successful request.
+        setError(null);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        // Always stop the loading state, whether the request succeeds or fails.
+        setLoading(false);
+      }
+    }
+    
     loadProduct();
   }, [id, products]);
 
